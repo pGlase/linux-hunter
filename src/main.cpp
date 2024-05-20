@@ -112,6 +112,7 @@ namespace {
 		<< std::flush;
 	}
 
+    //calls getopt and returns optind as defined by POSIX
 	int parse_args(int argc, char *argv[], const char *prog, const char *version) {
 		int			c;
 		static struct option	long_options[] = {
@@ -235,7 +236,8 @@ namespace {
 	void 	(*prev_sigint_handler)(int) = 0;
 	bool	run(true);
 
-	void sigint_handler(int signal) {
+    //TODO: check if signature is defined by C standard or remove
+	void sigint_handler(int /*signal*/) {
 		run = false;
 		// reset to previous handler
 		if(prev_sigint_handler)
@@ -258,8 +260,9 @@ int main(int argc, char *argv[]) {
 				p7(patterns::LobbyStatus);
 		memory::pattern	*p_vec[] = { &p0, &p1, &p2, &p3, &p4 , &p5, &p6, &p7 };
 		// parse args first
-		const auto optind = parse_args(argc, argv, argv[0], VERSION);
-		// check come consistency
+        //ignoring returned optind here, it is never used
+        std::ignore = parse_args(argc, argv, argv[0], VERSION);
+        // check come consistency
 		if(!load_dir.empty() && !save_dir.empty())
 			throw std::runtime_error("Can't specify both 'load' and 'save' options");
 		// if we aren't in load mode and mhw pid is -1

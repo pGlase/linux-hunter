@@ -40,7 +40,7 @@ namespace events {
 			if(-1 == efd_)
 				throw std::runtime_error((std::string("Can't created epoll fd: ") + strerror(errno)).c_str());
 			// add stdin
-			struct epoll_event event = {0};
+			struct epoll_event event = {};
     			event.events = EPOLLIN|EPOLLPRI|EPOLLERR;
     			event.data.fd = fd_;
     			if(epoll_ctl(efd_, EPOLL_CTL_ADD, fd_, &event)) {
@@ -52,7 +52,7 @@ namespace events {
 		// return true when need to do a refresh
 		// or when time timeout expires
 		bool do_io(const size_t msec_tmout) {
-			struct epoll_event	event = {0};
+			struct epoll_event	event = {};
 			const timer::wall_tmr	tm;
 			const int		fds = epoll_wait(efd_, &event, 1, msec_tmout);
 			const size_t		msec_diff = tm.get(),

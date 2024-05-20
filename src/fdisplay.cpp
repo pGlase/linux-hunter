@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <vector>
 
 namespace {
 
@@ -79,13 +80,12 @@ namespace {
 			return true;
 		}
 
+        //NOTE: Why is len not explicitly checked against len of string?
 		virtual void draw_text(const char* t, const ssize_t len) {
 			const size_t	sz = std::strlen(t);
-			wchar_t		wbuf[sz+1];
-			for(size_t i = 0; i < sz; ++i)
-				wbuf[i] = t[i];
-			wbuf[sz] = L'\0';
-			draw_text(wbuf, len);
+            std::vector<wchar_t> wbuf(sz+1, L'\0');
+            std::copy_n(t, sz, wbuf.begin());
+            draw_text(wbuf.data(), len);
 		}
 
 		virtual void draw_text(const wchar_t* t, const ssize_t len) {
