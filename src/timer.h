@@ -57,7 +57,7 @@ namespace timer {
 		cpu_ms get(void) const {
 			cpu_ms		rv;
 			const auto	end = std::chrono::high_resolution_clock::now();
-			struct rusage	re = {0};
+			struct rusage	re = {};
 			if(getrusage(RUSAGE_THREAD, &re))
 				throw std::runtime_error("getrusage failed");
 

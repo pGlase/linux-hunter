@@ -28,6 +28,7 @@
 #include <sys/uio.h>
 #include <iconv.h>
 #include <limits>
+#include <vector>
 
 memory::pattern::pattern() : mem_location(-1) {
 }
@@ -102,7 +103,7 @@ void memory::browser::snap_mem_regions(std::vector<mem_region>& mr, const bool a
 				inode = 0;
 		char		permissions[32],
 				device[32];
-		const auto rv = std::sscanf(line.c_str(), "%lx-%lx %s %lx %s %li", &beg, &end, permissions, &offset, device, &inode);
+		const auto rv = std::sscanf(line.c_str(), "%lx-%lx %s %lx %s %lu", &beg, &end, permissions, &offset, device, &inode);
 		if(rv == 6 && !inode && permissions[0] == 'r')
 			mr.push_back(mem_region(beg, end, line, alloc_mem));
 	}
@@ -404,12 +405,12 @@ namespace {
 }
 
 bool memory::browser::safe_read_utf8(const size_t addr, const size_t len, std::wstring& out, const bool refresh) {
-	// if we're in direct mode, reserve a buffer and read it
+    // if we're in direct mode, reserve a buffer and read it
 	if(direct_mem_) {
-		char	buf[len];
-		if(!direct_mem_read(addr, (void*)buf, len))
+        std::vector<char> buf(len, 0);
+		if(!direct_mem_read(addr, reinterpret_cast<void*>(buf.data()), len))
 			return false;
-		out = from_utf8(buf, len);
+		out = from_utf8(reinterpret_cast<char*>(buf.data()), len);
 		return true;
 	}
 	// pre-condition: all_regions_ is
