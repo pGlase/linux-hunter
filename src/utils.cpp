@@ -1,31 +1,45 @@
 #include "utils.h"
-#include <dirent.h>
-#include <unistd.h>
-#include <memory>
-#include <cctype>
+#include <string>
 #include <fstream>
-#include <cstring>
+#include <filesystem>
+#include <iostream>
 
 pid_t utils::find_mhw_pid(void) {
-	std::unique_ptr<DIR, void(*)(DIR*)>	d(opendir("/proc"), [](DIR *d){ if(d) closedir(d);});
-	if(!d)
+    const std::filesystem::path procDir{"/proc"};
+    if(!std::filesystem::exists(procDir))
+    {
 		throw std::runtime_error("Can't find MH:W pid - '/proc' doesn't seem to exist");
-	struct dirent	*de = 0;
-	while((de = readdir(d.get())) != 0) {
-		if(de->d_type != DT_DIR)
-			continue;
-		if(de->d_name[0] == '\0' || !std::isdigit(de->d_name[0]))
-			continue;
-		std::ifstream	istr((std::string("/proc/") + de->d_name + "/cmdline").c_str());
+    }
+    for (auto const& dir_entry : std::filesystem::directory_iterator{procDir})
+    {
+        if(!dir_entry.is_directory())
+        {
+            continue;
+        }
+        const auto folderName = dir_entry.path().stem().string();
+        //PID folders only contain digits - checking the first char is enough
+        if(!std::isdigit(folderName.front()))
+        {
+            continue;
+        }
+        const std::filesystem::path processDir = dir_entry.path() / "cmdline";
+        if(!std::filesystem::exists(processDir))
+        {
+            continue;
+        }
+        std::ifstream file(processDir);
 		std::string	line;
-		if(!std::getline(istr, line))
-			continue;
-		// "Z:\\disk5\\SteamLibrary\\steamapps\\common\\Monster Hunter World\\MonsterHunterWorld.exe"
-		const static char	MHW_EXE[] = "\\MonsterHunterWorld.exe";
-		const char		*ptr_mhw = std::strstr(line.c_str(), MHW_EXE);
-		if(ptr_mhw && (ptr_mhw[23] == '\0'))
-			return std::atoi(de->d_name);
-	}
-	throw std::runtime_error("Can't find MH:W pid");
+		if(!std::getline(file, line))
+        {
+            continue;
+        }
+        const auto startPos = line.find("\\MonsterHunterWorld.exe");
+        if(startPos == std::string::npos)
+        {
+            //not our process
+            continue;
+        }
+        return std::atoi(folderName.c_str());
+    }
+    throw std::runtime_error("Can't find MH:W pid");
 }
-
