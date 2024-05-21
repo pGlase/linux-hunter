@@ -5,5 +5,6 @@ project(LinuxHunter LANGUAGES CXX VERSION 1.0)
 set(CURSES_USE_NCURSES TRUE)
 set(CURSES_NEED_WIDE TRUE)
 find_package(Curses REQUIRED)
+find_package(fmt REQUIRED)
 
 add_subdirectory(src)
