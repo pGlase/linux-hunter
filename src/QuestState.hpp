@@ -11,3 +11,5 @@ enum class QuestState: int
     Abandon = 6,
     Quit = 7,
 };
+
+bool IsQuestFinished(QuestState state);

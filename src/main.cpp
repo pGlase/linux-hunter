@@ -21,6 +21,8 @@
 #include <cstring>
 #include <memory>
 #include <csignal>
+#include "PlayerDataLookup.hpp"
+#include "ProcessMemory.hpp"
 #include "memory.h"
 #include "ui.h"
 #include "wdisplay.h"
@@ -272,7 +274,13 @@ int main(int argc, char *argv[]) {
 			std::cerr << "Found pid: " << mhw_pid << std::endl;
 		}
 		// start here...
-		memory::browser	mb(mhw_pid, mem_dirty_opt, lazy_alloc, direct_mem);
+		ProcessMemory access(mhw_pid);
+        PlayerDataLookup playerData(access);
+        std::wcout << L"PartyData:\n";
+        std::wcout << playerData.GetFormattedPartyMemberString();
+        return 0;
+        //exit for now...
+        memory::browser	mb(mhw_pid, mem_dirty_opt, lazy_alloc, direct_mem);
 		// if we're in load mode fill b
 		// with content from the disk
 		if(!load_dir.empty()) {
@@ -308,7 +316,6 @@ int main(int argc, char *argv[]) {
 				std::fprintf(stderr, "%-16s\t%16li\t%s\n", p->name.c_str(), p->mem_location, ostr.str().c_str());
 			}
 		}
-	    std::wcout << mb.GetFormattedPartyMemberString() << std::endl;
         std::cerr << "Done" << std::endl;
 		return 0;
         // quit at this stage in case we have set the flag debug-all

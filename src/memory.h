@@ -126,12 +126,7 @@ namespace memory {
 				if(*i) (*i)->mem_location = find_first(**i, debug_all);
 			}
 		}
-
-        std::wstring GetFormattedPartyMemberString();
-        size_t LoadPartyInformationPointer();
-        std::vector<PartyMemberStructure> ReadPartyMemberStructure(long address, int count);
-        std::vector<PartyMemberStructure> LoadPartyMembers();
-		template<typename T>
+    template<typename T>
 		bool safe_read_mem(const size_t addr, T& out, const bool refresh = false) {
 			// if we're in direct mode, go for it
 			if(direct_mem_) {
@@ -167,11 +162,6 @@ namespace memory {
 				throw std::runtime_error("Couldn't find specified address");
 			return rv;
 		}
-
-        int  ReadMemoryIntAt(size_t address, const std::vector<size_t>& offsets);
-        long ReadMemoryLongAt(size_t address, const std::vector<size_t>& offsets);
-        int DerefMemory(size_t address, const std::vector<size_t>& offsets);
-
 		std::wstring read_utf8(const size_t addr, const size_t len, const bool refresh = false);
 
 		size_t load_effective_addr_rel(const size_t addr, const bool refresh = false);
