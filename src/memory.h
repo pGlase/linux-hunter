@@ -15,13 +15,12 @@
     along with linux-hunter.  If not, see <https://www.gnu.org/licenses/>.
  * */
 
-#ifndef _MEMORY_H_
-#define _MEMORY_H_
-
+#pragma once
 #include <string>
 #include <vector>
 #include <cstdint>
 #include <ostream>
+#include "PartyMemberStructure.hpp"
 #include "patterns.h"
 
 namespace memory {
@@ -128,6 +127,10 @@ namespace memory {
 			}
 		}
 
+        std::wstring GetFormattedPartyMemberString();
+        size_t LoadPartyInformationPointer();
+        std::vector<PartyMemberStructure> ReadPartyMemberStructure(long address, int count);
+        std::vector<PartyMemberStructure> LoadPartyMembers();
 		template<typename T>
 		bool safe_read_mem(const size_t addr, T& out, const bool refresh = false) {
 			// if we're in direct mode, go for it
@@ -165,6 +168,10 @@ namespace memory {
 			return rv;
 		}
 
+        int  ReadMemoryIntAt(size_t address, const std::vector<size_t>& offsets);
+        long ReadMemoryLongAt(size_t address, const std::vector<size_t>& offsets);
+        int DerefMemory(size_t address, const std::vector<size_t>& offsets);
+
 		std::wstring read_utf8(const size_t addr, const size_t len, const bool refresh = false);
 
 		size_t load_effective_addr_rel(const size_t addr, const bool refresh = false);
@@ -172,6 +179,4 @@ namespace memory {
 		size_t load_multilevel_addr_rel(const size_t addr, const uint32_t* off_b, const uint32_t* off_e, const bool refresh = false);
 	};
 }
-
-#endif //_MEMORY_H_
 

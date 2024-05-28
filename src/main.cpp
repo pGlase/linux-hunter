@@ -308,8 +308,10 @@ int main(int argc, char *argv[]) {
 				std::fprintf(stderr, "%-16s\t%16li\t%s\n", p->name.c_str(), p->mem_location, ostr.str().c_str());
 			}
 		}
-		std::cerr << "Done" << std::endl;
-		// quit at this stage in case we have set the flag debug-all
+	    std::wcout << mb.GetFormattedPartyMemberString() << std::endl;
+        std::cerr << "Done" << std::endl;
+		return 0;
+        // quit at this stage in case we have set the flag debug-all
 		if(debug_all)
 			return 0;
 		if((-1 == p6.mem_location) || (-1 == p2.mem_location))
